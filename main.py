@@ -77,7 +77,7 @@ def get_own_post():
         print 'Status code other than 200 received!'
 
 
-# method for user's recent media posts
+# method for downloading user's recent media posts
 def get_user_post(insta_username):
     user_id = get_user_id(insta_username)
     if user_id == None:
@@ -133,12 +133,27 @@ def like_a_post(insta_username):
         print 'Your like was unsuccessful. Try again!'
 
 
+# method to get list of people liking the recent media
+def get_like_list(insta_username):
+    media_id = get_post_id(insta_username)
+    request_url = (BASE_URL + '/media/%s/likes?access_token=%s') % (media_id, APP_ACCESS_TOKEN)
+    print 'GET Liked media url : %s' % request_url
+    liked_list = requests.get(request_url).json()
+    if(liked_list['meta']['code']) == 200:
+        if len(liked_list['data']):
+            print 'Number of likes : %d' % len(liked_list['data'])
+        else:
+            print "no likes on the post"
+    else:
+        print 'some error occurred'
+
+
 # method to put a comment on the post of a user with help of post id
 def post_a_comment(insta_username):
     media_id = get_post_id(insta_username)
     comment_text = raw_input("Your comment: ")
     payload = {"access_token": APP_ACCESS_TOKEN, "text" : comment_text}
-    request_url = (BASE_URL + 'media/%s/comments') % media_id
+    request_url = (BASE_URL + '/media/%s/comments') % media_id
     print 'POST request url : %s' % request_url
 
     make_comment = requests.post(request_url, payload).json()
@@ -149,8 +164,67 @@ def post_a_comment(insta_username):
         print "Unable to add comment. Try again!"
 
 
+def get_comment_list(insta_username):
+    media_id = get_post_id(insta_username)
+    request_url = BASE_URL + '/media/%s/comments?access_token=%s' % (media_id, APP_ACCESS_TOKEN)
+    print "GET Comments url : %s" % request_url
+    print '\n'
+    comment_list = requests.get(request_url).json()
+    if(comment_list['meta']['code']) == 200:
+        if len(comment_list['data']):
+            for comments in comment_list['data']:
+                print comments["from"]["username"]+'  says : '+comments["text"]
+                # print comments["text"]
 
 
+# execution starts from here
+def start_bot():
+    while True:
+        print '\n'
+        print 'Hey! Welcome to instaBot!'
+        print 'Here are your menu options:'
+        print "a.Get your own details\n"
+        print "b.Get details of a user by username\n"
+        print "c.Get your own recent post\n"
+        print "d.Get the recent post of a user by username\n"
+        print "e.Get a list of people who have liked the recent post of a user\n"
+        print "f.Like the recent post of a user\n"
+        print "g.Get a list of comments on the recent post of a user\n"
+        print "h.Make a comment on the recent post of a user\n"
+        print "i.Delete negative comments from the recent post of a user\n"
+        print "j.Exit"
 
-like_a_post('forinstaprojects')
+        choice = raw_input("Enter you choice: ")
+        if choice == "a":
+            self_info()
+        elif choice == "b":
+            insta_username = raw_input("Enter the username of the user: ")
+            get_user_info(insta_username)
+        elif choice == "c":
+            get_own_post()
+        elif choice == "d":
+            insta_username = raw_input("Enter the username of the user: ")
+            get_user_post(insta_username)
+        elif choice=="e":
+            insta_username = raw_input("Enter the username of the user: ")
+            get_like_list(insta_username)
+        elif choice=="f":
+            insta_username = raw_input("Enter the username of the user: ")
+            like_a_post(insta_username)
+        elif choice=="g":
+            insta_username = raw_input("Enter the username of the user: ")
+            get_comment_list(insta_username)
+        elif choice=="h":
+            insta_username = raw_input("Enter the username of the user: ")
+            post_a_comment(insta_username)
+        elif choice=="i":
+            insta_username = raw_input("Enter the username of the user: ")
+            delete_negative_comment(insta_username)
+        elif choice == "j":
+            exit()
+        else:
+            print "wrong choice"
 
+
+# execution begins here
+start_bot()
