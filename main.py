@@ -139,7 +139,6 @@ def choose_post(user_media):
         urllib.urlretrieve(video_url, video_name)
 
 
-
 # method to get id of a recent post by user
 def get_post_id(insta_username):
     user_id = get_user_id(insta_username)
@@ -174,7 +173,7 @@ def like_a_post(insta_username):
         print 'Your like was unsuccessful. Try again!'
 
 
-# method to get list of people liking the recent media
+# method to get list of people liking the recent media for a user
 def get_like_list(insta_username):
     media_id = get_post_id(insta_username)
     request_url = (BASE_URL + '/media/%s/likes?access_token=%s') % (media_id, APP_ACCESS_TOKEN)
@@ -182,6 +181,9 @@ def get_like_list(insta_username):
     liked_list = requests.get(request_url).json()
     if(liked_list['meta']['code']) == 200:
         if len(liked_list['data']):
+            print 'people who liked it :'
+            for people in liked_list['data']:
+                print people['username']
             print 'Number of likes : %d' % len(liked_list['data'])
         else:
             print "no likes on the post"
@@ -218,6 +220,21 @@ def get_comment_list(insta_username):
                 # print comments["text"]
 
 
+# method to get recent media liked by self
+def get_recent_liked():
+    request_url = BASE_URL+'/users/self/media/liked?access_token=%s' % APP_ACCESS_TOKEN
+    print "Get url for recent likes : %s" % request_url
+    liked_list = requests.get(request_url).json()
+    if liked_list['meta']['code'] == 200:
+        for media in liked_list['data']:
+            print "liked for user    %s:" % media['user']['username']
+            #print media['user']['username']
+            print "type : %s" % media['type']
+            if media['tags'] and media['caption']:
+                print "tags : %s  , caption : %s" % (media['tags'][0], media['caption']['text'])
+            print "\n"
+
+
 # execution starts from here
 def start_bot():
     while True:
@@ -233,7 +250,8 @@ def start_bot():
         print "g.Get a list of comments on the recent post of a user\n"
         print "h.Make a comment on the recent post of a user\n"
         print "i.Delete negative comments from the recent post of a user\n"
-        print "j.Exit"
+        print "j.Get Recent Media liked by self"
+        print "k.Exit"
 
         choice = raw_input("Enter you choice: ")
         if choice == "a":
@@ -262,10 +280,12 @@ def start_bot():
             insta_username = raw_input("Enter the username of the user: ")
             delete_negative_comment(insta_username)
         elif choice == "j":
+            get_recent_liked()
+        elif choice == "k":
             exit()
         else:
             print "wrong choice"
 
 
 # execution begins here
-get_own_post()
+get_recent_liked()
