@@ -24,7 +24,7 @@ def self_info():
 # method to get userid by a username
 def get_user_id(insta_username):
     request_url = (BASE_URL + '/users/search?q=%s&access_token=%s') % (insta_username, APP_ACCESS_TOKEN)
-    print 'GET request url : %s' % (request_url)
+    print 'GET request url for user id : %s' % (request_url)
     user_info = requests.get(request_url).json()
 
     if user_info['meta']['code'] == 200:
@@ -62,7 +62,7 @@ def get_user_info(insta_username):
 # method for self recent posts
 def get_own_post():
     request_url = (BASE_URL + '/users/self/media/recent/?access_token=%s') % (APP_ACCESS_TOKEN)
-    print 'GET request url : %s' % request_url
+    print 'GET request url for own post : %s' % request_url
     own_media = requests.get(request_url).json()
 
     if own_media['meta']['code'] == 200:
@@ -84,7 +84,7 @@ def get_user_post(insta_username):
         print 'User does not exist!'
         exit()
     request_url = (BASE_URL + '/users/%s/media/recent/?access_token=%s') % (user_id, APP_ACCESS_TOKEN)
-    print 'GET request url : %s' % request_url
+    print 'GET request url for user post : %s' % request_url
     user_media = requests.get(request_url).json()
 
     if user_media['meta']['code'] == 200:
@@ -106,7 +106,7 @@ def get_post_id(insta_username):
         print 'User does not exist!'
         exit()
     request_url = (BASE_URL + '/users/%s/media/recent/?access_token=%s') % (user_id, APP_ACCESS_TOKEN)
-    print 'GET request url : %s' % request_url
+    print 'GET request url for recent post : %s' % request_url
     user_media = requests.get(request_url).json()
 
     if user_media['meta']['code'] == 200:
@@ -125,7 +125,7 @@ def like_a_post(insta_username):
     media_id = get_post_id(insta_username)
     request_url = (BASE_URL + '/media/%s/likes') % media_id
     payload = {"access_token": APP_ACCESS_TOKEN}
-    print 'POST request url : %s' % request_url
+    print 'POST request url to like : %s' % request_url
     post_a_like = requests.post(request_url, payload).json()
     if post_a_like['meta']['code'] == 200:
         print 'Like was successful!'
@@ -154,7 +154,7 @@ def post_a_comment(insta_username):
     comment_text = raw_input("Your comment: ")
     payload = {"access_token": APP_ACCESS_TOKEN, "text" : comment_text}
     request_url = (BASE_URL + '/media/%s/comments') % media_id
-    print 'POST request url : %s' % request_url
+    print 'POST url for commenting post: %s' % request_url
 
     make_comment = requests.post(request_url, payload).json()
 
@@ -167,7 +167,7 @@ def post_a_comment(insta_username):
 def get_comment_list(insta_username):
     media_id = get_post_id(insta_username)
     request_url = BASE_URL + '/media/%s/comments?access_token=%s' % (media_id, APP_ACCESS_TOKEN)
-    print "GET Comments url : %s" % request_url
+    print "GET url for Comments list : %s" % request_url
     print '\n'
     comment_list = requests.get(request_url).json()
     if(comment_list['meta']['code']) == 200:
@@ -227,4 +227,4 @@ def start_bot():
 
 
 # execution begins here
-start_bot()
+get_comment_list('forinstaprojects')
