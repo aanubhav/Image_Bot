@@ -1,4 +1,5 @@
 from AccessToken import APP_ACCESS_TOKEN, BASE_URL
+from textblob import TextBlob
 import requests
 import urllib
 
@@ -288,4 +289,4 @@ def start_bot():
 
 
 # execution begins here
-get_recent_liked()
+start_bot()
