@@ -67,10 +67,8 @@ def get_own_post():
 
     if own_media['meta']['code'] == 200:
         if len(own_media['data']):
-            image_name = own_media['data'][0]['id'] + '.jpeg'
-            image_url = own_media['data'][0]['images']['standard_resolution']['url']
-            urllib.urlretrieve(image_url, image_name)
-            print 'Your image has been downloaded!'
+            choose_post(own_media)
+            print 'Your post has been downloaded!'
         else:
             print 'Post does not exist!'
     else:
@@ -89,14 +87,57 @@ def get_user_post(insta_username):
 
     if user_media['meta']['code'] == 200:
         if len(user_media['data']):
-            image_name = user_media['data'][0]['id'] + '.jpeg'
-            image_url = user_media['data'][0]['images']['standard_resolution']['url']
-            urllib.urlretrieve(image_url, image_name)
-            print 'Your image has been downloaded!'
+            choose_post(user_media)
+            print 'Your post has been downloaded!'
         else:
             print 'Post does not exist!'
     else:
         print 'Status code other than 200 received!'
+
+
+# method to select post according to user's choice
+def choose_post(user_media):
+    print '1. Select Recent Image\n2. Select Least liked post\n3. Select Recent video '
+    select = int(raw_input("enter the choice of post : "))
+    if select == 1:
+        i = -1
+        for media in user_media['data']:
+            i = i+1
+            if media['type'] == 'image':
+                image_name = user_media['data'][i]['id'] + '.jpeg'
+                image_url = user_media['data'][i]['images']['standard_resolution']['url']
+                urllib.urlretrieve(image_url, image_name)
+                break
+    elif select == 2:
+        lowest = user_media['data'][0]['likes']['count']
+        i=-1
+        for media in user_media['data']:
+            i = i+1
+            if media['likes']['count'] < lowest:
+                lowest = media['likes']['count']
+                index = i
+        if user_media['data'][index]['type'] == 'image':
+            image_name = "least_liked.jpg"
+            image_url = user_media['data'][index]['images']['standard_resolution']['url']
+            urllib.urlretrieve(image_url, image_name)
+        elif user_media['data'][index]['type'] == 'video':
+            video_name = "least_liked_video.mp4"
+            video_url = user_media['data'][index]['videos']['standard_resolution']['url']
+            urllib.urlretrieve(video_url, video_name)
+    elif select == 3:
+        i=-1
+        vid_index = -1
+        for media in user_media['data']:
+            i = i+1
+            if media['type'] == 'video':
+                vid_index = i
+        if vid_index == -1:
+            print "no videos found"
+            exit()
+        video_name = user_media['data'][vid_index]['id']+'.mp4'
+        video_url = user_media['data'][vid_index]['videos']['standard_resolution']['url']
+        urllib.urlretrieve(video_url, video_name)
+
 
 
 # method to get id of a recent post by user
@@ -227,4 +268,4 @@ def start_bot():
 
 
 # execution begins here
-get_comment_list('forinstaprojects')
+get_own_post()
