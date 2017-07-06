@@ -317,7 +317,8 @@ def start_bot():
         print "h.Make a comment on the recent post of a user\n"
         print "i.Delete negative comments from the recent post of a user\n"
         print "j.Get Recent Media liked by self"
-        print "k.Exit"
+        print "k.Analyze Recent Comment"
+        print "l.Exit"
 
         choice = raw_input("Enter you choice: ")
         if choice == "a":
@@ -348,6 +349,9 @@ def start_bot():
         elif choice == "j":
             get_recent_liked()
         elif choice == "k":
+            insta_username = raw_input("Enter the username of the user: ")
+            analyze_comment(insta_username)
+        elif choice == "l":
             exit()
         else:
             print "wrong choice"
