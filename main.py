@@ -1,6 +1,7 @@
 from AccessToken import APP_ACCESS_TOKEN, BASE_URL
 from textblob import TextBlob
 from textblob.sentiments import NaiveBayesAnalyzer
+import matplotlib.pyplot as plt
 import requests
 import urllib
 
@@ -26,7 +27,7 @@ def self_info():
 # method to get userid by a username
 def get_user_id(insta_username):
     request_url = (BASE_URL + '/users/search?q=%s&access_token=%s') % (insta_username, APP_ACCESS_TOKEN)
-    print 'GET request url for user id : %s' % (request_url)
+    print 'GET request url for user id : %s' % request_url
     user_info = requests.get(request_url).json()
 
     if user_info['meta']['code'] == 200:
@@ -246,7 +247,7 @@ def delete_negative_comment(insta_username):
 
     if comment_info['meta']['code'] == 200:
         if len(comment_info['data']):
-            #Here's a naive implementation of how to delete the negative comments :)
+
             for x in range(0, len(comment_info['data'])):
                 comment_id = comment_info['data'][x]['id']
                 comment_text = comment_info['data'][x]['text']
@@ -267,6 +268,37 @@ def delete_negative_comment(insta_username):
             print 'There are no existing comments on the post!'
     else:
         print 'Status code other than 200 received!'
+
+
+# method to analyze comments
+def analyze_comment(insta_username):
+    media_id = get_post_id(insta_username)
+    request_url = (BASE_URL + '/media/%s/comments/?access_token=%s') % (media_id, APP_ACCESS_TOKEN)
+    print 'GET request url : %s' % request_url
+    comment_info = requests.get(request_url).json()
+    if comment_info['meta']['code'] == 200:
+        if len(comment_info['data']):
+
+            for x in range(0, len(comment_info['data'])):
+                # comment_id = comment_info['data'][x]['id']
+                comment_text = comment_info['data'][x]['text']
+                print "analyzing ...."
+                blob = TextBlob(comment_text, analyzer=NaiveBayesAnalyzer())
+                negative = []
+                positive = []
+                if blob.sentiment.p_neg > blob.sentiment.p_pos:
+                    negative.append(blob.sentiment.p_neg)
+                else:
+                    positive.append(blob.sentiment.p_pos)
+    slices = [len(negative), len(positive)]
+    print "negative : %d" % len(negative)
+    print "positive :%d" % len(positive)
+    cols = ['y', 'r']
+    activities = ['negative', 'positive']
+    plt.pie(slices, startangle=90, shadow=True, explode=(0.1, 0), autopct='%1.1f%%', colors=cols, labels=activities)
+    plt.show()
+
+
 
 
 # execution starts from here
