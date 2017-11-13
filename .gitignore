@@ -1,0 +1,4 @@
+*.pyc
+AccessToken.py
+*.ipynb_checkpoints/
+sentiment_backup.ipynb

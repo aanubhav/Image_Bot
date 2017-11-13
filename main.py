@@ -358,4 +358,4 @@ def start_bot():
 
 
 # execution begins here
-delete_negative_comment('forinstaprojects')
+start_bot()
