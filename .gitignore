@@ -2,8 +2,8 @@
 AccessToken.py
 *.ipynb_checkpoints/
 sentiment_backup.ipynb
-*.jpg
-*.png
+
+
 *.mp4
-*.jpeg
+
 
